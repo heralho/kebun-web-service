@@ -15,8 +15,6 @@ const UrlPath = {
     GetHistory: "/getHistory",
     SetSensor: "/setSensor",
     GetSensor: "/getSensor",
-    SetDuration: "/setDuration",
-    GetDuration: "/getDuration",
 }
 
 const valveState = {
@@ -89,7 +87,7 @@ function httpRequestGet(urlPath, req) {
             if (config != null && jsonData.time != null) {
                 json.code = 200
                 json.message = `Success`
-                json.data = {"time":`${jsonData.time}`,"enabled":jsonData.enabled}
+                json.data = {"time":`${jsonData.time}`,"enabled":jsonData.enabled,"duration":jsonData.duration}
             } else {
                 json.code = 400
                 json.message = `Failed, file not found`
@@ -99,14 +97,16 @@ function httpRequestGet(urlPath, req) {
         case UrlPath.SetSchedule:
             let time = req.query.time
             let enabled = req.query.enabled
+            let duration = req.query.duration
 
             var config = fs.readFileSync('config.json')
             if (config != null) {
                 var jsonData = JSON.parse(config)
-                jsonData.time = time || 0
+                jsonData.time = time || 0600
                 jsonData.enabled = enabled || false
+                jsonData.duration = duration || 100
 
-                if ((jsonData.time).length == 4 && jsonData.enabled != null) {
+                if ((jsonData.time).length == 4 && jsonData.enabled != null && jsonData.duration != null) {
                     write = JSON.stringify(jsonData)
 
                     fs.writeFileSync('config.json', write);
@@ -119,7 +119,9 @@ function httpRequestGet(urlPath, req) {
                 }
             } else {
                 var jsonData = {
-                    time: `${time}`
+                    time: `${time}`,
+                    enabled: enabled,
+                    duration: duration
                 }
 
                 write = JSON.stringify(jsonData)
@@ -256,52 +258,6 @@ function httpRequestGet(urlPath, req) {
                 json.message = `Success`
                 dataArr = jsonData.slice(0, limit)
                 json.data = dataArr
-            } else {
-                json.code = 400
-                json.message = `Failed, file not found`
-            }
-
-            return json
-        case UrlPath.SetDuration:
-            let duration = req.query.duration
-
-            var config = fs.readFileSync('config.json')
-            if (config != null) {
-                var jsonData = JSON.parse(config)
-                jsonData.duration = duration
-
-                if (duration > 0 && duration < 900) {
-                    write = JSON.stringify(jsonData)
-
-                    fs.writeFileSync('config.json', write);
-
-                    json.code = 200
-                    json.message = `Success, duration updated ${jsonData.duration} seconds`
-                } else {
-                    json.code = 400
-                    json.message = `Failed, wrong input`
-                }
-            } else {
-                var jsonData = {
-                    duration: `${duration}`
-                }
-
-                write = JSON.stringify(jsonData)
-
-                fs.writeFileSync('config.json', write);
-
-                json.code = 201
-                json.message = `Success, duration created ${jsonData.duration} seconds`
-            }
-
-            return json
-        case UrlPath.GetDuration:
-            var config = fs.readFileSync('config.json')
-            jsonData = JSON.parse(config)
-            if (config != null && jsonData.automatic != null) {
-                json.code = 200
-                json.message = `Success`
-                json.data = {"duration":jsonData.duration}
             } else {
                 json.code = 400
                 json.message = `Failed, file not found`
