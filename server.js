@@ -82,9 +82,9 @@ function httpRequestGet(urlPath, req) {
 
             return json
         case UrlPath.GetSchedule:
-            var config = fs.readFileSync('config.json')
-            jsonData = JSON.parse(config)
-            if (config != null && jsonData.time != null) {
+            if (fs.existsSync('config.json') && jsonData.time != null) {
+                var config = fs.readFileSync('config.json')
+                jsonData = JSON.parse(config)
                 json.code = 200
                 json.message = `Success`
                 json.data = {"time":`${jsonData.time}`,"enabled":jsonData.enabled,"duration":jsonData.duration}
@@ -100,8 +100,9 @@ function httpRequestGet(urlPath, req) {
             let duration = req.query.duration
 
             if (time != null && enabled != null && duration != null){
-                var config = fs.readFileSync('config.json')
-                if (config != null) {
+                
+                if (fs.existsSync('config.json')) {
+                    var config = fs.readFileSync('config.json')
                     var jsonData = JSON.parse(config)
                     jsonData.time = time
                     jsonData.enabled = enabled
@@ -141,8 +142,9 @@ function httpRequestGet(urlPath, req) {
         case UrlPath.SetHistory:
             var content = req.query.content;
 
-            var history = fs.readFileSync('history.json')
-            if (history != null) {
+            
+            if (fs.existsSync('history.json')) {
+                var history = fs.readFileSync('history.json')
                 var arr = JSON.parse(history)
 
                 var data = {
@@ -179,8 +181,8 @@ function httpRequestGet(urlPath, req) {
             var limit = req.query.limit || 10
             var dataArr = []
 
-            var history = fs.readFileSync('history.json')
-            if (history != null) {
+            if (fs.existsSync('history.json')) {
+                var history = fs.readFileSync('history.json')
                 jsonData = JSON.parse(history)
 
                 json.code = 200
@@ -198,8 +200,8 @@ function httpRequestGet(urlPath, req) {
             let type = req.query.type
             var content = req.query.content
 
-            var sensors = fs.readFileSync('sensors.json')
-            if (sensors != null) {
+            if (fs.existsSync('sensors.json')) {
+                var sensors = fs.readFileSync('sensors.json')
                 var arr = JSON.parse(sensors)
                 const available = arr.filter(sensor => sensor.sensorName == sensorname).length
 
@@ -255,8 +257,8 @@ function httpRequestGet(urlPath, req) {
             var limit = req.query.limit || 10
             var dataArr = []
 
-            var sensors = fs.readFileSync('sensors.json')
-            if (sensors != null) {
+            if (fs.existsSync('sensors.json')) {
+                var sensors = fs.readFileSync('sensors.json')
                 jsonData = JSON.parse(sensors)
 
                 json.code = 200
@@ -278,8 +280,9 @@ function httpRequestGet(urlPath, req) {
 }
 
 function setHistory(content) {
-    var config = fs.readFileSync('history.json')
-    if (config != null) {
+    
+    if (fs.existsSync('history.json')) {
+        var config = fs.readFileSync('history.json')
         var arr = JSON.parse(config)
 
         var data = {
