@@ -27,7 +27,7 @@ app.get('*', (req, res) => {
     res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept")
 
     const json = httpRequestGet(req.path, req)
-
+    res.statusCode = json.code
     res.json(json)
 })
 
@@ -99,37 +99,42 @@ function httpRequestGet(urlPath, req) {
             let enabled = req.query.enabled
             let duration = req.query.duration
 
-            var config = fs.readFileSync('config.json')
-            if (config != null) {
-                var jsonData = JSON.parse(config)
-                jsonData.time = time || 0600
-                jsonData.enabled = enabled || false
-                jsonData.duration = duration || 100
-
-                if ((jsonData.time).length == 4 && jsonData.enabled != null && jsonData.duration != null) {
-                    write = JSON.stringify(jsonData)
-
-                    fs.writeFileSync('config.json', write);
-
-                    json.code = 200
-                    json.message = `Success, schedule updated ${jsonData.time.substring(0, 2)}:${jsonData.time.substring(2)} and ${jsonData.enabled == true ? "enabled" : "disabled"}`
+            if (time != null && enabled != null && duration != null){
+                var config = fs.readFileSync('config.json')
+                if (config != null) {
+                    var jsonData = JSON.parse(config)
+                    jsonData.time = time
+                    jsonData.enabled = enabled
+                    jsonData.duration = duration
+    
+                    if ((jsonData.time).length == 4 && jsonData.enabled != null && jsonData.duration != null) {
+                        write = JSON.stringify(jsonData)
+    
+                        fs.writeFileSync('config.json', write);
+    
+                        json.code = 200
+                        json.message = `Success, schedule updated ${jsonData.time.substring(0, 2)}:${jsonData.time.substring(2)} and ${jsonData.enabled == true ? "enabled" : "disabled"}`
+                    } else {
+                        json.code = 400
+                        json.message = `Failed, wrong input`
+                    }
                 } else {
-                    json.code = 400
-                    json.message = `Failed, wrong input`
+                    var jsonData = {
+                        time: `${time}`,
+                        enabled: enabled,
+                        duration: duration
+                    }
+    
+                    write = JSON.stringify(jsonData)
+    
+                    fs.writeFileSync('config.json', write);
+    
+                    json.code = 201
+                    json.message = `Success, schedule created ${jsonData.time.substring(0, 2)}:${jsonData.time.substring(2)}`
                 }
             } else {
-                var jsonData = {
-                    time: `${time}`,
-                    enabled: enabled,
-                    duration: duration
-                }
-
-                write = JSON.stringify(jsonData)
-
-                fs.writeFileSync('config.json', write);
-
-                json.code = 201
-                json.message = `Success, schedule created ${jsonData.time.substring(0, 2)}:${jsonData.time.substring(2)}`
+                json.code = 400
+                json.message = `Failed, param is required (time, enabled, duration)`
             }
 
             return json
