@@ -82,7 +82,7 @@ function httpRequestGet(urlPath, req) {
 
             return json
         case UrlPath.GetSchedule:
-            if (fs.existsSync('config.json') && jsonData.time != null) {
+            if (fs.existsSync('config.json')) {
                 var config = fs.readFileSync('config.json')
                 jsonData = JSON.parse(config)
                 json.code = 200
@@ -100,7 +100,6 @@ function httpRequestGet(urlPath, req) {
             let duration = req.query.duration
 
             if (time != null && enabled != null && duration != null){
-                
                 if (fs.existsSync('config.json')) {
                     var config = fs.readFileSync('config.json')
                     var jsonData = JSON.parse(config)
