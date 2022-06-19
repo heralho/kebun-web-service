@@ -273,7 +273,7 @@ function httpRequestGet(urlPath, req) {
             return json
         default:
             json.code = 404
-            json.message = `Halaman tidak tersedia`
+            json.message = `Path not found`
 
             return json
     }
