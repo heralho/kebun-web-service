@@ -45,7 +45,7 @@ function httpRequestGet(urlPath, req) {
 
             if (interval > 0 && interval < 900 && getValve() === 1) {
                 setValve(valveState.open)
-                setTimeout(function (){setValve(valveState.close)}, (parseInt(interval) * 1000))
+                //setTimeout(function (){setValve(valveState.close)}, (parseInt(interval) * 1000))
 
                 if (auto == "false") {
                     setHistory(`Manual##${interval}##`)
