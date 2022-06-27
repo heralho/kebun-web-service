@@ -3,7 +3,7 @@ const app = express();
 const fs = require('fs');
 
 var Gpio = require('onoff').Gpio;
-var valve = new Gpio(21, 'out', { reconfigureDirection: false });
+var valveio = new Gpio(21, 'out', { reconfigureDirection: false });
 
 const UrlPath = {
     Spray: "/spray",
@@ -312,16 +312,16 @@ function setHistory(content) {
 function setValve(state) {
     switch (state) {
         case valveState.open:
-            valve.writeSync(0)
+            valveio.writeSync(0)
             console.log(state)
         default:
-            valve.writeSync(1)
+            valveio.writeSync(1)
             console.log(state)
     }
 }
 
 function getValve() {
-    return valve.readSync()
+    return valveio.readSync()
 }
 
 const PORT = process.env.PORT || 3001
